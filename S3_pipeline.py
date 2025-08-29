@@ -15,12 +15,9 @@ def clean_columns_e_f(df):
             col = df.columns[col_index]
             df[col] = (
                 df[col].astype(str)
-                .replace(
-                    {
-                        r'[\t/]|\\t|"\t"| \t|\t |	 ': ' ',  # Replace tab variations and slashes
-                    },
-                    regex=True
-                )
+                .replace({
+                    r'[\t/]|\\t|"\t"| \t|\t |	 ': ' ',  # Replace tab and slashes
+                }, regex=True)
                 .str.replace(' +', ' ', regex=True)  # Collapse multiple spaces
                 .str.strip()
                 .fillna('')
@@ -33,7 +30,7 @@ def save_as_txt(df, folder_path, original_filename):
     txt_path = os.path.join(folder_path, txt_filename)
     try:
         df.to_csv(txt_path, sep='\t', index=False)
-        print(f"✔ Saved: {txt_filename}")
+        print(f"✔ Saved: {txt_path}")
     except Exception as e:
         print(f"❌ Failed to save {txt_path}: {e}")
 
@@ -62,6 +59,7 @@ def process_file(filepath, filename, folder_path):
 
         # ✅ Delete original file after processing
         os.remove(filepath)
+        print(f"🗑 Deleted original: {filename}")
 
     except Exception as e:
         print(f"‼ Error with file {filename}: {e}")
@@ -74,6 +72,7 @@ def main():
         return
 
     for root, _, files in os.walk(folder_path):
+        print(f"📂 Processing folder: {root}")
         for filename in files:
             if filename.lower().endswith(('.xls', '.xlsx', '.csv')):
                 old_filepath = os.path.join(root, filename)
